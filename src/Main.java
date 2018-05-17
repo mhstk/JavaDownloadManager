@@ -1,11 +1,6 @@
 import javax.swing.*;
-import java.awt.*;
-import MainFrame.*;
 
-import java.awt.*;
-import javax.swing.*;
-
-    public class Main {
+public class Main {
 
         public static void main(String[] args) {
             try {
@@ -13,7 +8,7 @@ import javax.swing.*;
             } catch (Exception e) {
                 System.err.println(e);
             }
-            MainFrame mainFrame = new MainFrame();
+            MainFrame mainFrame = MainFrame.getInstance();
 
 
 
