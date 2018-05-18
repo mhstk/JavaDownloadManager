@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicProgressBarUI;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -88,7 +89,6 @@ public class MainFrame extends JFrame {
         mainPanel.setLayout(layout);
 
 
-
         menu = new Menu();
 
         processingPanel = new ProcessingPanel();
@@ -108,7 +108,6 @@ public class MainFrame extends JFrame {
         toolBar.setPlace();
         processingPanel.setPlace();
         completedPanel.setPlace();
-
 
 
         setContentPane(mainPanel);
@@ -138,7 +137,7 @@ public class MainFrame extends JFrame {
 
     }
 
-    public void update(){
+    public void update() {
         revalidate();
         menu.setPlace();
         processingPanel.setPlace();
@@ -146,10 +145,44 @@ public class MainFrame extends JFrame {
         toolBar.setPlace();
         mainPanel.revalidate();
         mainPanel.updateUI();
+        SwingUtilities.updateComponentTreeUI(this);
+        for (int i = 0; i < processingPanel.processingPanels.size(); i++) {
+            processingPanel.processingPanels.get(i).getjProgressBar().setUI(new BasicProgressBarUI() {
+                @Override
+                public void paintDeterminate(Graphics g, JComponent c) {
+                    if (!(g instanceof Graphics2D)) {
+                        return;
+                    }
+                    Insets b = progressBar.getInsets(); // area for border
+                    int barRectWidth = progressBar.getWidth() - (b.right + b.left);
+                    int barRectHeight = progressBar.getHeight() - (b.top + b.bottom);
+                    if (barRectWidth <= 0 || barRectHeight <= 0) {
+                        return;
+                    }
+                    int cellLength = getCellLength();
+                    int cellSpacing = getCellSpacing();
+
+                    int amountFull = getAmountFull(b, barRectWidth, barRectHeight);
+
+                    if (progressBar.getOrientation() == JProgressBar.HORIZONTAL) {
+
+                        float x = amountFull / (float) barRectWidth;
+                        g.setColor(Color.GREEN);
+                        g.fillRect(b.left, b.top, amountFull, barRectHeight);
+
+                    } else { // VERTICAL
+
+                    }
+                    if (progressBar.isStringPainted()) {
+                        paintString(g, b.left, b.top, barRectWidth, barRectHeight, amountFull, b);
+                    }
+                }
+            });
+        }
     }
 
 
-    public void setPlace(){
+    public void setPlace() {
         layout.putConstraint(SpringLayout.WEST, menu, 0, SpringLayout.WEST, mainPanel);
         layout.putConstraint(SpringLayout.NORTH, menu, 0, SpringLayout.NORTH, mainPanel);
         layout.putConstraint(SpringLayout.EAST, toolBar, 1, SpringLayout.EAST, mainPanel);
@@ -226,28 +259,28 @@ public class MainFrame extends JFrame {
             exit = new JMenuItem("Exit");
             about = new JMenuItem("About");
 
-            about.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
+            about.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             about.setMnemonic('A');
 
-            newDownload.setAccelerator(KeyStroke.getKeyStroke('N', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
+            newDownload.setAccelerator(KeyStroke.getKeyStroke('N', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             newDownload.setMnemonic('N');
 
-            resume.setAccelerator(KeyStroke.getKeyStroke('R', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
+            resume.setAccelerator(KeyStroke.getKeyStroke('R', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             resume.setMnemonic('R');
 
-            pause.setAccelerator(KeyStroke.getKeyStroke('P', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
+            pause.setAccelerator(KeyStroke.getKeyStroke('P', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             pause.setMnemonic('P');
 
-            remove.setAccelerator(KeyStroke.getKeyStroke('M', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
+            remove.setAccelerator(KeyStroke.getKeyStroke('M', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             remove.setMnemonic('m');
 
-            cancel.setAccelerator(KeyStroke.getKeyStroke('C', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
+            cancel.setAccelerator(KeyStroke.getKeyStroke('C', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             cancel.setMnemonic('C');
 
-            settings.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
+            settings.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             settings.setMnemonic('S');
 
-            exit.setAccelerator(KeyStroke.getKeyStroke('E', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
+            exit.setAccelerator(KeyStroke.getKeyStroke('E', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             exit.setMnemonic('E');
 
 
@@ -272,19 +305,21 @@ public class MainFrame extends JFrame {
             MenuHandler menuHandler = new MenuHandler();
 
         }
-        public void downloadSelected(){
+
+        public void downloadSelected() {
             resume.setEnabled(true);
             pause.setEnabled(true);
             remove.setEnabled(true);
             cancel.setEnabled(true);
         }
 
-        public void downloadUnSelected(){
+        public void downloadUnSelected() {
             resume.setEnabled(false);
             pause.setEnabled(false);
             remove.setEnabled(false);
             cancel.setEnabled(false);
         }
+
         class MenuHandler implements ActionListener {
 
 
@@ -299,7 +334,6 @@ public class MainFrame extends JFrame {
                 about.addActionListener(this);
 
             }
-
 
 
             @Override

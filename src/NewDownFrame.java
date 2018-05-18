@@ -53,6 +53,9 @@ public class NewDownFrame extends JFrame {
         cancelB = new JButton("Cancel");
         cancelB.setFont(new Font("Arial",Font.CENTER_BASELINE,15));
         MainFrame.setComponentSize(cancelB,new Dimension(80,40));
+
+        MainFrame.setComponentSize(linkAddressT,new Dimension(310,30));
+        MainFrame.setComponentSize(directoryAddressT,new Dimension(250,30));
         cancelB.addActionListener(keyHandler);
         mainPanel.add(directoryAddressL);
         mainPanel.add(directoryAddressT);
@@ -63,8 +66,6 @@ public class NewDownFrame extends JFrame {
         mainPanel.add(addB);
         mainPanel.add(cancelB);
 
-        MainFrame.setComponentSize(linkAddressT,new Dimension(310,30));
-        MainFrame.setComponentSize(directoryAddressT,new Dimension(250,30));
         layout.putConstraint(SpringLayout.NORTH,linkAddressL,55,SpringLayout.NORTH,mainPanel);
         layout.putConstraint(SpringLayout.WEST,linkAddressL,60,SpringLayout.WEST,mainPanel);
         layout.putConstraint(SpringLayout.NORTH,directoryAddressL,40,SpringLayout.SOUTH,linkAddressL);

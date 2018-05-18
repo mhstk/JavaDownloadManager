@@ -86,7 +86,7 @@ public class Menu extends JPanel {
 
             }
             if (e.getSource() == settingsB) {
-
+                Manager.getInstance().settingFrame();
             }
         }
     }

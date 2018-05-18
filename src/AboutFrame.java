@@ -16,7 +16,7 @@ public class AboutFrame extends JFrame {
 
     public AboutFrame() {
         setLocation(300, 100);
-        setPreferredSize(new Dimension(460, 500));
+        setPreferredSize(new Dimension(360, 460));
         setSize(360, 460);
         setTitle("About");
         setIconImage(MainFrame.getInstance().icon);
