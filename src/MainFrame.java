@@ -13,7 +13,7 @@ public class MainFrame extends JFrame {
     private Menu menu;
     private ToolBar toolBar;
     private JScrollPane jScrollPane;
-    Image icon = Toolkit.getDefaultToolkit().getImage("UIPic\\icon.png");
+    public Image icon = Toolkit.getDefaultToolkit().getImage("UIPic\\icon.png");
     MyMenu frameMenubar = new MyMenu(this);
 
 
@@ -201,12 +201,14 @@ public class MainFrame extends JFrame {
         MainFrame mainFrame;
         JMenuBar menuBar;
         JMenu download;
+        JMenu help;
         JMenuItem newDownload;
         JMenuItem pause;
         JMenuItem resume;
         JMenuItem cancel;
         JMenuItem remove;
         JMenuItem settings;
+        JMenuItem about;
 
         JMenuItem exit;
 
@@ -214,6 +216,7 @@ public class MainFrame extends JFrame {
             this.mainFrame = mainFrame;
             menuBar = new JMenuBar();
             download = new JMenu("Download");
+            help = new JMenu("Help");
             newDownload = new JMenuItem("New Download");
             resume = new JMenuItem("Resume");
             pause = new JMenuItem("Pause");
@@ -221,6 +224,10 @@ public class MainFrame extends JFrame {
             remove = new JMenuItem("Remove");
             settings = new JMenuItem("Settings");
             exit = new JMenuItem("Exit");
+            about = new JMenuItem("About");
+
+            about.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
+            about.setMnemonic('A');
 
             newDownload.setAccelerator(KeyStroke.getKeyStroke('N', Toolkit.getDefaultToolkit ().getMenuShortcutKeyMask()));
             newDownload.setMnemonic('N');
@@ -259,7 +266,9 @@ public class MainFrame extends JFrame {
             download.add(settings);
             download.addSeparator();
             download.add(exit);
+            help.add(about);
             menuBar.add(download);
+            menuBar.add(help);
             MenuHandler menuHandler = new MenuHandler();
 
         }
@@ -287,6 +296,7 @@ public class MainFrame extends JFrame {
                 remove.addActionListener(this);
                 settings.addActionListener(this);
                 exit.addActionListener(this);
+                about.addActionListener(this);
 
             }
 
@@ -301,7 +311,7 @@ public class MainFrame extends JFrame {
                     System.out.println("Pause");
                 }
                 if (e.getSource() == resume) {
-                    System.out.println("resume");
+                    Manager.getInstance().resumeDownload();
                 }
                 if (e.getSource() == remove) {
                     System.out.println("remove");
@@ -314,6 +324,9 @@ public class MainFrame extends JFrame {
                 }
                 if (e.getSource() == exit) {
                     Manager.getInstance().exit();
+                }
+                if (e.getSource() == about) {
+                    AboutFrame aboutFrame = new AboutFrame();
                 }
             }
 

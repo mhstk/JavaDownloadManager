@@ -68,7 +68,9 @@ public class ProcessingPanel extends JPanel {
         public void mouseClicked(MouseEvent e) {
             DownloadPanel downloadPanel = (DownloadPanel) e.getSource();
             if (e.isMetaDown()) {
-                System.out.println("rightclick!");
+                InfoFrame infoFrame = new InfoFrame();
+                infoFrame.setDownloadItem(downloadPanel);
+                infoFrame.action();
             } else {
                 if (selected.contains(downloadPanel)) {
                     selected.remove(downloadPanel);
@@ -216,5 +218,9 @@ class DownloadPanel extends JPanel {
 
     public DownloadItem getDownloadItem() {
         return downloadItem;
+    }
+
+    public JProgressBar getjProgressBar() {
+        return jProgressBar;
     }
 }

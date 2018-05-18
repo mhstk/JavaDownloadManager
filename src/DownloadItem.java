@@ -19,12 +19,14 @@ public class DownloadItem {
 
 
 
-    public void setInfo(double size , double speed , double downloaded , int hour , int min, int day , int month , int year){
+    public void setInfo(double size , double speed , double downloaded ,Time startedTime , String serverAddress,String savedAddress){
         setSize(size);
         setSpeedDownload(speed);
         setDownloadedSize(downloaded);
         setPercent(downloaded*100.0/size);
-        startedTime.setTime(hour, min, day, month, year);
+        this.startedTime = startedTime;
+        setSavedAddress(savedAddress);
+        setServerAddress(serverAddress);
     }
 
     public void resumeDownload(){

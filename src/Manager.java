@@ -1,15 +1,21 @@
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
 
 public class Manager {
     private MainFrame mainFrame;
     private static Manager manager;
     private ArrayList<DownloadPanel> selected;
+    private String directory ;
 
     private Manager() {
         this.mainFrame = MainFrame.getInstance();
+        directory = "C:\\Users\\setak\\Desktop";
     }
+
+
 
     public static Manager getInstance() {
         if (manager == null) {
@@ -19,8 +25,12 @@ public class Manager {
     }
 
     public void newDownload() {
-        DownloadItem downloadItem = new DownloadItem("hi.psd");
-        downloadItem.setInfo(200, 1.2, 100, 12, 34, 8, 2, 2018);
+        NewDownFrame newDownFrame = new NewDownFrame();
+    }
+
+    public void addNewDownload(NewDownFrame newDownFrame){
+        DownloadItem downloadItem = new DownloadItem(newDownFrame.getDownloadName());
+        downloadItem.setInfo(newDownFrame.getDownloadSize(), 1.2, new Random().nextInt((int)newDownFrame.getDownloadSize()), newDownFrame.getStartedTime(),newDownFrame.getServerAddress(),newDownFrame.getSavedAddress());
         mainFrame.getProcessingPanel().addADownload(downloadItem);
         mainFrame.update();
     }
@@ -40,10 +50,18 @@ public class Manager {
         mainFrame.getFrameMenubar().downloadUnSelected();
     }
 
+    public String getDirectory() {
+        return directory;
+    }
+
+    public void setDirectory(String directory) {
+        this.directory = directory;
+    }
+
     public void resumeDownload() {
         Iterator<DownloadPanel> it = selected.iterator();
-        while (it.hasNext()){
-            DownloadPanel downloadPanel =  it.next();
+        while (it.hasNext()) {
+            DownloadPanel downloadPanel = it.next();
             //downloadPanel.getDownloadItem().resumeDownload();
             for (int i = (int) downloadPanel.getDownloadItem().downloadedSize; i <= downloadPanel.getDownloadItem().size; i ++) {
 
@@ -63,7 +81,7 @@ public class Manager {
             }
         }
         mainFrame.getProcessingPanel().updateLabels();
-        if (selected.isEmpty()){
+        if (selected.isEmpty()) {
             downloadUnSelected();
         }
     }

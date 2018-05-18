@@ -36,6 +36,7 @@ public class ToolBar extends JPanel {
         newB = new JButton();
         MainFrame.setComponentSize(newB, new Dimension(40, 40));
         newB.setIcon(getScaledImage("UIPic\\newIcon.png", newB));
+        newB.setToolTipText("New Download");
         newB.setBackground(backButtonColor);
         newB.addActionListener(new KeyListener());
 
@@ -44,21 +45,28 @@ public class ToolBar extends JPanel {
         resumeB.setIcon(getScaledImage("UIPic\\resumeIcon.png", newB));
         resumeB.setBackground(backButtonColor);
         resumeB.addActionListener(new KeyListener());
+        resumeB.setToolTipText("Resume");
 
         pauseB = new JButton();
         MainFrame.setComponentSize(pauseB, new Dimension(40, 40));
         pauseB.setIcon(getScaledImage("UIPic\\pauseIcon.png", newB));
         pauseB.setBackground(backButtonColor);
+        pauseB.addActionListener(new KeyListener());
+        pauseB.setToolTipText("Pause");
 
         cancelB = new JButton();
         MainFrame.setComponentSize(cancelB, new Dimension(40, 40));
         cancelB.setIcon(getScaledImage("UIPic\\cancelIcon.png", newB));
         cancelB.setBackground(backButtonColor);
+        cancelB.addActionListener(new KeyListener());
+        cancelB.setToolTipText("Cancel");
 
         removeB = new JButton();
         MainFrame.setComponentSize(removeB, new Dimension(40, 40));
         removeB.setIcon(getScaledImage("UIPic\\removeIcon.png", newB));
         removeB.setBackground(backButtonColor);
+        removeB.addActionListener(new KeyListener());
+        removeB.setToolTipText("Remove");
 
         downloadUnSelected();
 
