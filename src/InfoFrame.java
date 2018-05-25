@@ -23,9 +23,6 @@ public class InfoFrame extends JFrame {
         this.downloadItem = downloadPanel.getDownloadItem();
     }
 
-    public void setDownloadItem(DownloadCompletedPanel downloadPanel){
-        this.downloadItem = downloadPanel.getDownloadItem();
-    }
 
     InfoFrame(){
         setLocation(300, 100);

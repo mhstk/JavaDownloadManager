@@ -11,11 +11,12 @@ public class MainFrame extends JFrame {
     private SpringLayout layout;
     private CompletedPanel completedPanel;
     private ProcessingPanel processingPanel;
+    private QueuePanel queuePanel;
     private Menu menu;
     private ToolBar toolBar;
     private JScrollPane jScrollPane;
-    public Image icon = Toolkit.getDefaultToolkit().getImage("UIPic\\icon.png");
-    MyMenu frameMenubar = new MyMenu(this);
+    Image icon = Toolkit.getDefaultToolkit().getImage("UIPic\\icon.png");
+    private MyMenu frameMenuBar = new MyMenu(this);
 
 
     private void tray() {
@@ -30,11 +31,11 @@ public class MainFrame extends JFrame {
             MenuItem item1 = new MenuItem("Exit");
             MenuItem item2 = new MenuItem("Open");
 
-            //add item to menu
+            //addDownload item to menu
             menu.add(item2);
             menu.add(item1);
 
-            //add action listener to the item in the popup menu
+            //addDownload action listener to the item in the popup menu
             item1.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     System.exit(0);
@@ -50,7 +51,7 @@ public class MainFrame extends JFrame {
             //create system tray icon.
             TrayIcon trayIcon = new TrayIcon(iconImage, "JDM.exe", menu);
 
-            //add the tray icon to the system tray.
+            //addDownload the tray icon to the system tray.
             try {
                 systemTray.add(trayIcon);
                 trayIcon.addActionListener(new ActionListener() {
@@ -92,6 +93,7 @@ public class MainFrame extends JFrame {
         menu = new Menu();
 
         processingPanel = new ProcessingPanel();
+        queuePanel = new QueuePanel();
 
         completedPanel = new CompletedPanel();
 
@@ -104,14 +106,16 @@ public class MainFrame extends JFrame {
         mainPanel.add(toolBar);
         mainPanel.add(menu);
 
+        setSize();
         setPlace();
         toolBar.setPlace();
-        processingPanel.setPlace();
-        completedPanel.setPlace();
+        processingPanel.setPanelSize();
+        queuePanel.setPanelSize();
+        completedPanel.setPanelSize();
 
 
         setContentPane(mainPanel);
-        setJMenuBar(frameMenubar.menuBar);
+        setJMenuBar(frameMenuBar.menuBar);
         setVisible(true);
         mainPanel.revalidate();
         mainPanel.updateUI();
@@ -129,25 +133,40 @@ public class MainFrame extends JFrame {
                 setComponentSize(jScrollPane, new Dimension(d.width * 7 / 10, d.height * 16 / 20));
                 setComponentSize(completedPanel, new Dimension(d.width * 7 / 10, d.height * 16 / 20));
                 setComponentSize(processingPanel, new Dimension(d.width * 7 / 10, d.height * 16 / 20));
+                setComponentSize(queuePanel, new Dimension(d.width * 7 / 10, d.height * 16 / 20));
                 setComponentSize(toolBar, new Dimension(d.width * 7 / 10, d.height * 3 / 20));
 
                 update();
             }
         });
 
+
+    }
+
+    public void setSize(){
+        Dimension d = getSize();
+        setComponentSize(menu, new Dimension(d.width * 3 / 10, d.height));
+        setComponentSize(jScrollPane, new Dimension(d.width * 7 / 10, d.height * 16 / 20));
+        setComponentSize(completedPanel, new Dimension(d.width * 7 / 10, d.height * 16 / 20));
+        setComponentSize(processingPanel, new Dimension(d.width * 7 / 10, d.height * 16 / 20));
+        setComponentSize(queuePanel, new Dimension(d.width * 7 / 10, d.height * 16 / 20));
+        setComponentSize(toolBar, new Dimension(d.width * 7 / 10, d.height * 3 / 20));
     }
 
     public void update() {
-        revalidate();
         menu.setPlace();
-        processingPanel.setPlace();
-        completedPanel.setPlace();
+        processingPanel.setPanelSize();
+        queuePanel.setPanelSize();
+        completedPanel.setPanelSize();
+        processingPanel.reSize();
+        queuePanel.reSize();
+        completedPanel.reSize();
         toolBar.setPlace();
         mainPanel.revalidate();
         mainPanel.updateUI();
         SwingUtilities.updateComponentTreeUI(this);
-        for (int i = 0; i < processingPanel.processingPanels.size(); i++) {
-            processingPanel.processingPanels.get(i).getjProgressBar().setUI(new BasicProgressBarUI() {
+        for (int i = 0; i < processingPanel.downloadPanels.size(); i++) {
+            processingPanel.downloadPanels.get(i).getjProgressBar().setUI(new BasicProgressBarUI() {
                 @Override
                 public void paintDeterminate(Graphics g, JComponent c) {
                     if (!(g instanceof Graphics2D)) {
@@ -179,8 +198,70 @@ public class MainFrame extends JFrame {
                 }
             });
         }
+
+        for (int i = 0; i < queuePanel.downloadPanels.size(); i++) {
+            queuePanel.downloadPanels.get(i).getjProgressBar().setUI(new BasicProgressBarUI() {
+                @Override
+                public void paintDeterminate(Graphics g, JComponent c) {
+                    if (!(g instanceof Graphics2D)) {
+                        return;
+                    }
+                    Insets b = progressBar.getInsets(); // area for border
+                    int barRectWidth = progressBar.getWidth() - (b.right + b.left);
+                    int barRectHeight = progressBar.getHeight() - (b.top + b.bottom);
+                    if (barRectWidth <= 0 || barRectHeight <= 0) {
+                        return;
+                    }
+                    int cellLength = getCellLength();
+                    int cellSpacing = getCellSpacing();
+
+                    int amountFull = getAmountFull(b, barRectWidth, barRectHeight);
+
+                    if (progressBar.getOrientation() == JProgressBar.HORIZONTAL) {
+
+                        float x = amountFull / (float) barRectWidth;
+                        g.setColor(Color.GREEN);
+                        g.fillRect(b.left, b.top, amountFull, barRectHeight);
+
+                    } else { // VERTICAL
+
+                    }
+                    if (progressBar.isStringPainted()) {
+                        paintString(g, b.left, b.top, barRectWidth, barRectHeight, amountFull, b);
+                    }
+                }
+            });
+        }
+        revalidate();
     }
 
+
+    public void showProcessing(){
+        MainFrame.getInstance().getCompletedPanel().setVisible(false);
+        MainFrame.getInstance().getQueuePanel().setVisible(false);
+        MainFrame.getInstance().getProcessingPanel().setVisible(true);
+        MainFrame.getInstance().getjScrollPane().setViewportView(MainFrame.getInstance().getProcessingPanel());
+        MainFrame.getInstance().getProcessingPanel().setPanelSize();
+        MainFrame.getInstance().getToolBar().queueButtonsDisable();
+    }
+
+    public void showCompleted(){
+        MainFrame.getInstance().getCompletedPanel().setVisible(true);
+        MainFrame.getInstance().getProcessingPanel().setVisible(false);
+        MainFrame.getInstance().getQueuePanel().setVisible(false);
+        MainFrame.getInstance().getjScrollPane().setViewportView(MainFrame.getInstance().getCompletedPanel());
+        MainFrame.getInstance().getCompletedPanel().setPanelSize();
+        MainFrame.getInstance().getToolBar().queueButtonsDisable();
+    }
+
+    public void showQueue(){
+        MainFrame.getInstance().getCompletedPanel().setVisible(false);
+        MainFrame.getInstance().getQueuePanel().setVisible(true);
+        MainFrame.getInstance().getProcessingPanel().setVisible(false);
+        MainFrame.getInstance().getjScrollPane().setViewportView(MainFrame.getInstance().getQueuePanel());
+        MainFrame.getInstance().getProcessingPanel().setPanelSize();
+        MainFrame.getInstance().getToolBar().queueButtonsEnabale();
+    }
 
     public void setPlace() {
         layout.putConstraint(SpringLayout.WEST, menu, 0, SpringLayout.WEST, mainPanel);
@@ -197,6 +278,10 @@ public class MainFrame extends JFrame {
 
     public CompletedPanel getCompletedPanel() {
         return completedPanel;
+    }
+
+    public QueuePanel getQueuePanel() {
+        return queuePanel;
     }
 
     public ProcessingPanel getProcessingPanel() {
@@ -219,8 +304,8 @@ public class MainFrame extends JFrame {
         return toolBar;
     }
 
-    public MyMenu getFrameMenubar() {
-        return frameMenubar;
+    public MyMenu getFrameMenuBar() {
+        return frameMenuBar;
     }
 
     public static void setComponentSize(JComponent jComponent, Dimension d) {
@@ -313,6 +398,10 @@ public class MainFrame extends JFrame {
             cancel.setEnabled(true);
         }
 
+        public void downloadCompletedPSelected(){
+            remove.setEnabled(true);
+        }
+
         public void downloadUnSelected() {
             resume.setEnabled(false);
             pause.setEnabled(false);
@@ -342,19 +431,19 @@ public class MainFrame extends JFrame {
                     Manager.getInstance().newDownload();
                 }
                 if (e.getSource() == pause) {
-                    System.out.println("Pause");
+                    Manager.getInstance().pause();
                 }
                 if (e.getSource() == resume) {
                     Manager.getInstance().resumeDownload();
                 }
                 if (e.getSource() == remove) {
-                    System.out.println("remove");
+                    Manager.getInstance().remove();
                 }
                 if (e.getSource() == cancel) {
-                    System.out.println("cancel");
+                    Manager.getInstance().cancel();
                 }
                 if (e.getSource() == settings) {
-                    System.out.println("settings");
+                    Manager.getInstance().settingFrame();
                 }
                 if (e.getSource() == exit) {
                     Manager.getInstance().exit();

@@ -1,4 +1,6 @@
-public class Time {
+import java.io.Serializable;
+
+public class Time implements Serializable {
     private int hour;
     private int min;
     private int day;
@@ -62,5 +64,10 @@ public class Time {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    @Override
+    public String toString() {
+        return  getHour() + ":" + getMin() + " (" + getMonth() + "/" + getDay() + "/" + getYear() + ")";
     }
 }

@@ -6,18 +6,16 @@ import java.awt.event.ActionListener;
 public class Menu extends JPanel {
 
     SpringLayout layout;
-    Image background;
-    JButton processingB;
-    JButton completedB;
-    JButton queueB;
-    JButton settingsB;
+    private Image background;
+    private JButton processingB;
+    private JButton completedB;
+    private JButton queueB;
+    private JButton settingsB;
 
     @Override
     protected void paintComponent(Graphics g) {
-
         super.paintComponent(g);
         g.drawImage(background, 0, 0,getWidth(),getHeight(), null);
-
     }
 
     Menu() {
@@ -51,7 +49,7 @@ public class Menu extends JPanel {
 
     }
 
-    public void setPlace() {
+    void setPlace() {
         Dimension d = getSize();
 
         layout.putConstraint(SpringLayout.NORTH, completedB, 20, SpringLayout.SOUTH, processingB);
@@ -71,19 +69,15 @@ public class Menu extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == processingB) {
-                MainFrame.getInstance().getCompletedPanel().setVisible(false);
-                MainFrame.getInstance().getProcessingPanel().setVisible(true);
-                MainFrame.getInstance().getjScrollPane().setViewportView(MainFrame.getInstance().getProcessingPanel());
-                MainFrame.getInstance().getProcessingPanel().setPlace();
+                MainFrame.getInstance().showProcessing();
+
             }
             if (e.getSource() == completedB) {
-                MainFrame.getInstance().getCompletedPanel().setVisible(true);
-                MainFrame.getInstance().getProcessingPanel().setVisible(false);
-                MainFrame.getInstance().getjScrollPane().setViewportView(MainFrame.getInstance().getCompletedPanel());
-                MainFrame.getInstance().getCompletedPanel().setPlace();
+                MainFrame.getInstance().showCompleted();
+
             }
             if (e.getSource() == queueB) {
-
+                MainFrame.getInstance().showQueue();
             }
             if (e.getSource() == settingsB) {
                 Manager.getInstance().settingFrame();

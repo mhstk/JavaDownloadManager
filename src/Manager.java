@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -8,31 +7,43 @@ public class Manager {
     private MainFrame mainFrame;
     private static Manager manager;
     private ArrayList<DownloadPanel> selected;
-    private String directory ;
+    private String directory;
     private int limitDownload;
     private int maxDownload;
     private String lookAndFeelS;
+    private String fileProcessingAddress ;
+    private String fileCompletedAddress ;
+    private String fileQueueAddress ;
+    private String fileSettingsAddress ;
+    private String fileRemovedAddress ;
 
-    private Manager() {
-        this.mainFrame = MainFrame.getInstance();
-        directory = "C:\\Users\\setak\\Desktop";
+    private Manager(String lookAndFeelS ,int limitDownload , String directory ) {
+
+        this.directory = directory;
         maxDownload = 100;
-        limitDownload = maxDownload;
-        lookAndFeelS = "javax.swing.plaf.nimbus.NimbusLookAndFeel" ;
+        this.limitDownload = limitDownload;
+        this.lookAndFeelS = lookAndFeelS;
+        fileProcessingAddress = "files\\processing.jdm";
+        fileCompletedAddress = "files\\completed.jdm";
+        fileQueueAddress = "files\\queue.jdm";
+        fileSettingsAddress = "files\\settings.jdm";
+        fileRemovedAddress = "files\\removed.jdm";
+        selected = new ArrayList<>();
+
     }
 
-    public void run(){
-        MainFrame mainFrame = MainFrame.getInstance();
+    public void run() {
+        this.mainFrame = MainFrame.getInstance();
+        start();
     }
 
-    public void setMainFrameUI(){
+    public void setMainFrameUI() {
         try {
             UIManager.setLookAndFeel(lookAndFeelS);
         } catch (Exception e) {
             System.err.println(e);
         }
         MainFrame.getInstance().update();
-        MainFrame.getInstance().pack();
 
     }
 
@@ -60,39 +71,83 @@ public class Manager {
 
     public static Manager getInstance() {
         if (manager == null) {
-            manager = new Manager();
+            manager = new Manager(FileUtils.readLF(),FileUtils.readlimit(),FileUtils.readDirectory());
         }
         return manager;
     }
 
-    public void newDownload() {
-        NewDownFrame newDownFrame = new NewDownFrame();
+    public void start(){
+
+        ArrayList<DownloadItem> downloadItems = FileUtils.read(fileProcessingAddress);
+        for (int i=0 ; i<downloadItems.size();i++) {
+            mainFrame.getProcessingPanel().addDownload(downloadItems.get(i));
+        }
+        mainFrame.getProcessingPanel().revalidate();
+        downloadItems.clear();
+
+
+        downloadItems = FileUtils.read(fileCompletedAddress);
+        for (int i=0 ; i<downloadItems.size();i++) {
+            mainFrame.getCompletedPanel().addDownload(downloadItems.get(i));
+        }
+        mainFrame.getCompletedPanel().revalidate();
+        downloadItems.clear();
+
+
+        downloadItems = FileUtils.read(fileQueueAddress);
+        for (int i=0 ; i<downloadItems.size();i++) {
+            mainFrame.getQueuePanel().addDownload(downloadItems.get(i));
+        }
+        mainFrame.getQueuePanel().revalidate();
+
+
     }
 
-    public void addNewDownload(NewDownFrame newDownFrame){
+    public void newDownload() {
+        new NewDownFrame();
+    }
+
+    public void addNewDownload(NewDownFrame newDownFrame, boolean toQueue) {
         DownloadItem downloadItem = new DownloadItem(newDownFrame.getDownloadName());
-        downloadItem.setInfo(newDownFrame.getDownloadSize(), 1.2, new Random().nextInt((int)newDownFrame.getDownloadSize()), newDownFrame.getStartedTime(),newDownFrame.getServerAddress(),newDownFrame.getSavedAddress());
-        mainFrame.getProcessingPanel().addADownload(downloadItem);
+        downloadItem.setInfo(newDownFrame.getDownloadSize(), 1.2, new Random().nextInt((int) newDownFrame.getDownloadSize()), newDownFrame.getStartedTime(), newDownFrame.getServerAddress(), newDownFrame.getSavedAddress());
+        mainFrame.getProcessingPanel().addDownload(downloadItem);
+        if (toQueue) {
+            mainFrame.getQueuePanel().addDownload(downloadItem);
+            FileUtils.write(fileQueueAddress,downloadItem);
+        }
         mainFrame.update();
+        FileUtils.write(fileProcessingAddress,downloadItem);
     }
 
     public void exit() {
         mainFrame.setVisible(false);
     }
 
-    public void settingFrame(){
-        SettingsFrame settingsFrame = new SettingsFrame();
+    public void settingFrame() {
+         new SettingsFrame();
+
     }
 
     public void downloadSelected(ArrayList<DownloadPanel> selected) {
         mainFrame.getToolBar().downloadSelected();
-        mainFrame.getFrameMenubar().downloadSelected();
+        mainFrame.getFrameMenuBar().downloadSelected();
+        this.selected = selected;
+    }
+
+    public void downloadCompletedPSelected(ArrayList<DownloadPanel> selected) {
+        mainFrame.getToolBar().downloadCompletedPSelected();
+        mainFrame.getFrameMenuBar().downloadCompletedPSelected();
         this.selected = selected;
     }
 
     public void downloadUnSelected() {
+        for (DownloadPanel downloadPanel : selected) {
+            downloadPanel.setOpaque(false);
+        }
+        selected.clear();
         mainFrame.getToolBar().downloadUnSelected();
-        mainFrame.getFrameMenubar().downloadUnSelected();
+        mainFrame.getFrameMenuBar().downloadUnSelected();
+        mainFrame.update();
     }
 
     public String getDirectory() {
@@ -103,8 +158,78 @@ public class Manager {
         this.directory = directory;
     }
 
+    public void remove() {
+        Iterator<DownloadPanel> it = selected.iterator();
+        while (it.hasNext()) {
+            DownloadPanel downloadPanel = it.next();
+
+            Iterator iterator = MainFrame.getInstance().getQueuePanel().downloadPanels.iterator();
+            while (iterator.hasNext()) {
+                DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
+                if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()) {
+                    MainFrame.getInstance().getQueuePanel().remove(downloadPanel1);
+                    iterator.remove();
+                    MainFrame.getInstance().getQueuePanel().downloadItems.remove(downloadPanel1.getDownloadItem());
+                }
+            }
+            FileUtils.removeAnObject(fileQueueAddress,downloadPanel.getDownloadItem());
+
+            iterator = MainFrame.getInstance().getProcessingPanel().downloadPanels.iterator();
+            while (iterator.hasNext()) {
+                DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
+                if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()){
+                    MainFrame.getInstance().getProcessingPanel().remove(downloadPanel1);
+                    iterator.remove();
+                    MainFrame.getInstance().getProcessingPanel().downloadItems.remove(downloadPanel1.getDownloadItem());
+                    FileUtils.writeRemoved(fileRemovedAddress,downloadPanel1.getDownloadItem());
+                }
+            }
+            FileUtils.removeAnObject(fileProcessingAddress,downloadPanel.getDownloadItem());
+
+
+
+            iterator = MainFrame.getInstance().getCompletedPanel().downloadPanels.iterator();
+            while (iterator.hasNext()) {
+                DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
+                if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()){
+                    MainFrame.getInstance().getCompletedPanel().remove(downloadPanel1);
+                    iterator.remove();
+                    MainFrame.getInstance().getCompletedPanel().downloadItems.remove(downloadPanel1.getDownloadItem());
+                    FileUtils.writeRemoved(fileRemovedAddress,downloadPanel1.getDownloadItem());
+                }
+            }
+            FileUtils.removeAnObject(fileCompletedAddress,downloadPanel.getDownloadItem());
+
+
+
+
+            it.remove();
+
+        }
+        mainFrame.getProcessingPanel().updateLabels();
+        mainFrame.getCompletedPanel().updateLabels();
+        mainFrame.getQueuePanel().updateLabels();
+        mainFrame.getProcessingPanel().reSet();
+        mainFrame.getCompletedPanel().reSet();
+        mainFrame.getQueuePanel().reSet();
+        downloadUnSelected();
+    }
+
+    public void cancel() {
+        for (DownloadPanel downloadPanel : selected) {
+            downloadPanel.getDownloadItem().setDownloadedSize(0);
+            downloadPanel.getDownloadItem().computePercent();
+            downloadPanel.updateInfo();
+        }
+        downloadUnSelected();
+    }
+
+    public void pause() {
+        System.out.println("pause");
+    }
+
     public void resumeDownload() {
-        if (selected.size()<= limitDownload) {
+        if (selected.size() <= limitDownload) {
             Iterator<DownloadPanel> it = selected.iterator();
             while (it.hasNext()) {
                 DownloadPanel downloadPanel = it.next();
@@ -117,22 +242,62 @@ public class Manager {
                         e.printStackTrace();
                     }
                     if (i == downloadPanel.getDownloadItem().size) {
-                        mainFrame.getProcessingPanel().processingPanels.remove(downloadPanel);
+
+                        Iterator iterator = MainFrame.getInstance().getQueuePanel().downloadPanels.iterator();
+                        while (iterator.hasNext()) {
+                            DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
+                            if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()) {
+                                MainFrame.getInstance().getQueuePanel().remove(downloadPanel1);
+                                iterator.remove();
+                                MainFrame.getInstance().getQueuePanel().downloadItems.remove(downloadPanel1.getDownloadItem());
+                            }
+                        }
+                        FileUtils.removeAnObject(fileQueueAddress,downloadPanel.getDownloadItem());
+
+                        iterator = MainFrame.getInstance().getProcessingPanel().downloadPanels.iterator();
+                        while (iterator.hasNext()) {
+                            DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
+                            if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()){
+                                MainFrame.getInstance().getProcessingPanel().remove(downloadPanel1);
+                                iterator.remove();
+                                MainFrame.getInstance().getProcessingPanel().downloadItems.remove(downloadPanel1.getDownloadItem());
+
+                            }
+                        }
+                        FileUtils.removeAnObject(fileProcessingAddress,downloadPanel.getDownloadItem());
+
+                        iterator = MainFrame.getInstance().getCompletedPanel().downloadPanels.iterator();
+                        while (iterator.hasNext()) {
+                            DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
+                            if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()){
+                                MainFrame.getInstance().getCompletedPanel().remove(downloadPanel1);
+                                iterator.remove();
+                                MainFrame.getInstance().getCompletedPanel().downloadItems.remove(downloadPanel1.getDownloadItem());
+                            }
+                        }
+                        FileUtils.removeAnObject(fileCompletedAddress,downloadPanel.getDownloadItem());
+
                         it.remove();
-                        mainFrame.getProcessingPanel().processing.remove(downloadPanel.getDownloadItem());
-                        mainFrame.getCompletedPanel().addADownload(downloadPanel.getDownloadItem());
-                        mainFrame.update();
+
+                        mainFrame.getCompletedPanel().addDownload(downloadPanel.getDownloadItem());
+                        FileUtils.write(fileCompletedAddress,downloadPanel.getDownloadItem());
                     }
                 }
             }
             mainFrame.getProcessingPanel().updateLabels();
+            mainFrame.getQueuePanel().updateLabels();
+            mainFrame.getCompletedPanel().updateLabels();
+            mainFrame.getProcessingPanel().reSet();
+            mainFrame.getQueuePanel().reSet();
+            mainFrame.getCompletedPanel().reSet();
+            mainFrame.update();
             if (selected.isEmpty()) {
                 downloadUnSelected();
-            }else {
+            } else {
                 downloadSelected(selected);
             }
-        }else {
-            JOptionPane.showMessageDialog(MainFrame.getInstance(), "Can't download more than "+limitDownload+" file at the same time.\nYou can change limit size in settings.","Error",JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(MainFrame.getInstance(), "Can't download more than " + limitDownload + " file at the same time.\nYou can change limit size in settings.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

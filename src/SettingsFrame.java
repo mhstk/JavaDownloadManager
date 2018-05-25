@@ -44,7 +44,7 @@ public class SettingsFrame extends JFrame {
         if (Manager.getInstance().getLimitDownload()<Manager.getInstance().getMaxDownload()){
             limitL.setEnabled(true);
             limitS.setEnabled(true);
-            limitS = new JSpinner(new SpinnerNumberModel(Manager.getInstance().getLimitDownload(),1, Manager.getInstance().getMaxDownload(), 1));
+            limitS.setValue(Manager.getInstance().getLimitDownload());
             limitCHB.setSelected(true);
 
         }
@@ -205,6 +205,8 @@ public class SettingsFrame extends JFrame {
                     if (motifLF.isSelected()){
                         manager.setLookAndFeelS("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
                     }
+                    String settings = Manager.getInstance().getLimitDownload()+"\n"+Manager.getInstance().getDirectory()+"\n"+Manager.getInstance().getLookAndFeelS();
+                    FileUtils.write("files\\settings.jdm",settings);
                     manager.setMainFrameUI();
                     close();
                 }

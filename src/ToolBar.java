@@ -16,6 +16,8 @@ public class ToolBar extends JPanel {
     private JButton pauseB;
     private JButton cancelB;
     private JButton removeB;
+    private JButton upB;
+    private JButton downB;
     private Color backButtonColor;
 
     @Override
@@ -68,6 +70,22 @@ public class ToolBar extends JPanel {
         removeB.addActionListener(new KeyListener());
         removeB.setToolTipText("Remove");
 
+        upB = new JButton();
+        MainFrame.setComponentSize(upB, new Dimension(40, 40));
+        upB.setIcon(getScaledImage("UIPic\\up-arrow.png", upB));
+        upB.setToolTipText("Move up");
+        upB.setBackground(backButtonColor);
+        upB.addActionListener(new KeyListener());
+        upB.setVisible(false);
+
+        downB = new JButton();
+        MainFrame.setComponentSize(downB, new Dimension(40, 40));
+        downB.setIcon(getScaledImage("UIPic\\down-arrow.png", downB));
+        downB.setToolTipText("Move down");
+        downB.setBackground(backButtonColor);
+        downB.addActionListener(new KeyListener());
+        downB.setVisible(false);
+
         downloadUnSelected();
 
         add(newB);
@@ -75,6 +93,8 @@ public class ToolBar extends JPanel {
         add(pauseB);
         add(cancelB);
         add(removeB);
+        add(upB);
+        add(downB);
 
 
     }
@@ -88,7 +108,21 @@ public class ToolBar extends JPanel {
             }
             if (e.getSource()==resumeB){
                 Manager.getInstance().resumeDownload();
-                System.out.println("2");
+            }
+            if (e.getSource()==cancelB){
+                Manager.getInstance().cancel();
+            }
+            if (e.getSource()==removeB){
+                Manager.getInstance().remove();
+            }
+            if (e.getSource()==pauseB){
+                Manager.getInstance().pause();
+            }
+            if (e.getSource()==upB){
+                Manager.getInstance().pause();
+            }
+            if (e.getSource()==downB){
+                Manager.getInstance().pause();
             }
         }
     }
@@ -109,11 +143,26 @@ public class ToolBar extends JPanel {
         cancelB.setEnabled(true);
     }
 
+    public void downloadCompletedPSelected(){
+        removeB.setEnabled(true);
+    }
+
     public void downloadUnSelected(){
         resumeB.setEnabled(false);
         pauseB.setEnabled(false);
         removeB.setEnabled(false);
         cancelB.setEnabled(false);
+
+    }
+
+    public void queueButtonsEnabale(){
+        upB.setVisible(true);
+        downB.setVisible(true);
+    }
+
+    public void queueButtonsDisable(){
+        upB.setVisible(false);
+        downB.setVisible(false);
     }
 
     public ImageIcon getScaledImage(String address, JButton button) {
@@ -138,16 +187,22 @@ public class ToolBar extends JPanel {
         MainFrame.setComponentSize(pauseB, new Dimension(getWidth()*6/100, getWidth()*6/100));
         MainFrame.setComponentSize(removeB, new Dimension(getWidth()*6/100, getWidth()*6/100));
         MainFrame.setComponentSize(cancelB, new Dimension(getWidth()*6/100, getWidth()*6/100));
+        MainFrame.setComponentSize(upB, new Dimension(getWidth()*6/100, getWidth()*6/100));
+        MainFrame.setComponentSize(downB, new Dimension(getWidth()*6/100, getWidth()*6/100));
 
         layout.putConstraint(SpringLayout.WEST, newB, gapH, SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, newB, gapV, SpringLayout.NORTH, this);
-        layout.putConstraint(SpringLayout.WEST, resumeB, getWidth()*6/100 + gapH * 2, SpringLayout.WEST, this);
-        layout.putConstraint(SpringLayout.NORTH, resumeB, gapV, SpringLayout.NORTH, this);
-        layout.putConstraint(SpringLayout.WEST, pauseB, getWidth()*2*6/100 + 3 * gapH, SpringLayout.WEST, this);
-        layout.putConstraint(SpringLayout.NORTH, pauseB, gapV, SpringLayout.NORTH, this);
-        layout.putConstraint(SpringLayout.WEST, cancelB, getWidth()*3*6/100 + 4 * gapH, SpringLayout.WEST, this);
-        layout.putConstraint(SpringLayout.NORTH, cancelB, gapV, SpringLayout.NORTH, this);
-        layout.putConstraint(SpringLayout.WEST, removeB, getWidth()*4*6/100 + 5 * gapH, SpringLayout.WEST, this);
-        layout.putConstraint(SpringLayout.NORTH, removeB, gapV, SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.WEST, resumeB,  gapH , SpringLayout.EAST, newB);
+        layout.putConstraint(SpringLayout.NORTH, resumeB, 0, SpringLayout.NORTH, newB);
+        layout.putConstraint(SpringLayout.WEST, pauseB, gapH, SpringLayout.EAST, resumeB);
+        layout.putConstraint(SpringLayout.NORTH, pauseB, 0, SpringLayout.NORTH, resumeB);
+        layout.putConstraint(SpringLayout.WEST, cancelB, gapH, SpringLayout.EAST, pauseB);
+        layout.putConstraint(SpringLayout.NORTH, cancelB, 0, SpringLayout.NORTH, pauseB);
+        layout.putConstraint(SpringLayout.WEST, removeB,  gapH, SpringLayout.EAST, cancelB);
+        layout.putConstraint(SpringLayout.NORTH, removeB, 0, SpringLayout.NORTH, cancelB);
+        layout.putConstraint(SpringLayout.WEST, upB, gapH, SpringLayout.EAST, removeB);
+        layout.putConstraint(SpringLayout.NORTH, upB, 0, SpringLayout.NORTH, removeB);
+        layout.putConstraint(SpringLayout.WEST, downB, gapH, SpringLayout.EAST, upB);
+        layout.putConstraint(SpringLayout.NORTH, downB, 0, SpringLayout.NORTH, upB);
     }
 }

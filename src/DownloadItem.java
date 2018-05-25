@@ -1,4 +1,6 @@
-public class DownloadItem {
+import java.io.Serializable;
+
+public class DownloadItem implements Serializable {
     String name;
     String serverAddress;
     String savedAddress;
@@ -23,10 +25,14 @@ public class DownloadItem {
         setSize(size);
         setSpeedDownload(speed);
         setDownloadedSize(downloaded);
-        setPercent(downloaded*100.0/size);
+        setPercent(downloadedSize*100.0/size);
         this.startedTime = startedTime;
         setSavedAddress(savedAddress);
         setServerAddress(serverAddress);
+    }
+
+    public void computePercent(){
+        setPercent(downloadedSize*100.0/size);
     }
 
     public void resumeDownload(){
@@ -95,6 +101,18 @@ public class DownloadItem {
         this.percent = percent;
     }
 
+    @Override
+    public String toString() {
+        return "Name: "+ name + " *** Link: "+serverAddress+" *** Directory: "+savedAddress+" *** size: "+size+" *** start time: "+startedTime;
+    }
 
-
+    @Override
+    public boolean equals(Object obj) {
+        DownloadItem downloadItem = (DownloadItem) obj;
+        if (downloadItem.toString().equals(toString()) ){
+            return true;
+        }else {
+            return false;
+        }
+    }
 }
