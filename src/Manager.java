@@ -166,7 +166,7 @@ public class Manager {
             Iterator iterator = MainFrame.getInstance().getQueuePanel().downloadPanels.iterator();
             while (iterator.hasNext()) {
                 DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
-                if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()) {
+                if (downloadPanel.getDownloadItem().equals(downloadPanel1.getDownloadItem())) {
                     MainFrame.getInstance().getQueuePanel().remove(downloadPanel1);
                     iterator.remove();
                     MainFrame.getInstance().getQueuePanel().downloadItems.remove(downloadPanel1.getDownloadItem());
@@ -177,7 +177,7 @@ public class Manager {
             iterator = MainFrame.getInstance().getProcessingPanel().downloadPanels.iterator();
             while (iterator.hasNext()) {
                 DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
-                if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()){
+                if (downloadPanel.getDownloadItem().equals(downloadPanel1.getDownloadItem())){
                     MainFrame.getInstance().getProcessingPanel().remove(downloadPanel1);
                     iterator.remove();
                     MainFrame.getInstance().getProcessingPanel().downloadItems.remove(downloadPanel1.getDownloadItem());
@@ -191,7 +191,7 @@ public class Manager {
             iterator = MainFrame.getInstance().getCompletedPanel().downloadPanels.iterator();
             while (iterator.hasNext()) {
                 DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
-                if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()){
+                if (downloadPanel.getDownloadItem().equals(downloadPanel1.getDownloadItem())){
                     MainFrame.getInstance().getCompletedPanel().remove(downloadPanel1);
                     iterator.remove();
                     MainFrame.getInstance().getCompletedPanel().downloadItems.remove(downloadPanel1.getDownloadItem());
@@ -236,17 +236,26 @@ public class Manager {
                 for (int i = (int) downloadPanel.getDownloadItem().downloadedSize; i <= downloadPanel.getDownloadItem().size; i++) {
 
                     downloadPanel.getDownloadItem().updateInfo(0, i);
+
+
+
+
+
                     try {
                         Thread.sleep(1);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
+
                     if (i == downloadPanel.getDownloadItem().size) {
 
                         Iterator iterator = MainFrame.getInstance().getQueuePanel().downloadPanels.iterator();
                         while (iterator.hasNext()) {
                             DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
-                            if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()) {
+                            System.out.println("resume queue : "+downloadPanel1.getDownloadItem());
+                            if (downloadPanel.getDownloadItem().equals(downloadPanel1.getDownloadItem())) {
+                                System.out.println("inininininininininininin");
                                 MainFrame.getInstance().getQueuePanel().remove(downloadPanel1);
                                 iterator.remove();
                                 MainFrame.getInstance().getQueuePanel().downloadItems.remove(downloadPanel1.getDownloadItem());
@@ -257,7 +266,8 @@ public class Manager {
                         iterator = MainFrame.getInstance().getProcessingPanel().downloadPanels.iterator();
                         while (iterator.hasNext()) {
                             DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
-                            if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()){
+                            System.out.println("resume processing : "+downloadPanel1.getDownloadItem());
+                            if (downloadPanel.getDownloadItem().equals(downloadPanel1.getDownloadItem())){
                                 MainFrame.getInstance().getProcessingPanel().remove(downloadPanel1);
                                 iterator.remove();
                                 MainFrame.getInstance().getProcessingPanel().downloadItems.remove(downloadPanel1.getDownloadItem());
@@ -269,7 +279,8 @@ public class Manager {
                         iterator = MainFrame.getInstance().getCompletedPanel().downloadPanels.iterator();
                         while (iterator.hasNext()) {
                             DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
-                            if (downloadPanel.getDownloadItem() == downloadPanel1.getDownloadItem()){
+                            System.out.println("resume completed: "+downloadPanel1.getDownloadItem());
+                            if (downloadPanel.getDownloadItem().equals(downloadPanel1.getDownloadItem())){
                                 MainFrame.getInstance().getCompletedPanel().remove(downloadPanel1);
                                 iterator.remove();
                                 MainFrame.getInstance().getCompletedPanel().downloadItems.remove(downloadPanel1.getDownloadItem());
