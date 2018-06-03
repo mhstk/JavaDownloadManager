@@ -206,4 +206,31 @@ public class FileUtils {
             e.printStackTrace();
         }
     }
+
+    public static ArrayList<String> readLanguage(String language){
+        String fileName = "" ;
+        if (language.equals("English")){
+             fileName= "files\\English.jdm";
+        }
+        if (language.equals("فارسی")){
+            fileName = "files\\Persian.jdm";
+        }
+        ArrayList<String> words = new ArrayList<>();
+
+        try {
+            Scanner scanner = new Scanner(new FileInputStream(fileName));
+            String line ;
+            while (scanner.hasNextLine()){
+                line = scanner.nextLine();
+//                System.out.println(line);
+                words.add(line);
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return words;
+    }
+
+
 }

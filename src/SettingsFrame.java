@@ -17,6 +17,8 @@ public class SettingsFrame extends JFrame {
     private JSpinner limitS;
     private JLabel limitL;
     private JLabel directoryAddressL;
+    private JLabel languageL;
+    private JComboBox<String> languageC;
     private JTextField directoryAddressT;
     private JButton directoryB;
     private JButton ok;
@@ -31,10 +33,11 @@ public class SettingsFrame extends JFrame {
     private JButton removeFilterB;
     private JButton addFilterB;
     private JTextField filterT;
+    JLabel filterL;
 
     SettingsFrame() {
         setLocation(300, 100);
-        setPreferredSize(new Dimension(470, 550));
+        setPreferredSize(new Dimension(470, 565));
         setSize(470, 550);
         setTitle("Settings");
         setBackground(new Color(43,49,52));
@@ -74,6 +77,9 @@ public class SettingsFrame extends JFrame {
         }
         directoryAddressL = new JLabel("Choose default directory :  ");
         directoryAddressL.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        languageL = new JLabel("Choose Language : ");
+        languageL.setForeground(Color.WHITE);
+        languageL.setFont(new Font("Tahoma", Font.PLAIN, 15));
         directoryAddressL.setForeground(Color.WHITE);
         directoryAddressT = new JTextField(Manager.getInstance().getDirectory());
         directoryAddressT.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -109,6 +115,8 @@ public class SettingsFrame extends JFrame {
         buttonGroup.add(windowsClassicLF);
         buttonGroup.add(metalLF);
         buttonGroup.add(motifLF);
+        languageC = new JComboBox<>(new String[]{"English" , "فارسی"});
+        languageC.setSelectedItem(Manager.getInstance().getLanguage());
 
         limitCHB.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -137,6 +145,8 @@ public class SettingsFrame extends JFrame {
         mainPanel.add(metalLF);
         mainPanel.add(motifLF);
         mainPanel.add(lookAndFeelL);
+        mainPanel.add(languageL);
+        mainPanel.add(languageC);
 
         if (Manager.getInstance().getLookAndFeelS().equals("com.sun.java.swing.plaf.windows.WindowsLookAndFeel")) {
             windowsLF.setSelected(true);
@@ -178,6 +188,10 @@ public class SettingsFrame extends JFrame {
         mainLayout.putConstraint(SpringLayout.NORTH, metalLF, 10, SpringLayout.SOUTH, windowsClassicLF);
         mainLayout.putConstraint(SpringLayout.WEST, motifLF, 0, SpringLayout.WEST, nimbusLF);
         mainLayout.putConstraint(SpringLayout.NORTH, motifLF, 10, SpringLayout.SOUTH, nimbusLF);
+        mainLayout.putConstraint(SpringLayout.WEST, languageL, 0, SpringLayout.WEST, lookAndFeelL);
+        mainLayout.putConstraint(SpringLayout.NORTH, languageL, 25, SpringLayout.SOUTH, motifLF);
+        mainLayout.putConstraint(SpringLayout.WEST, languageC, 70, SpringLayout.EAST, languageL);
+        mainLayout.putConstraint(SpringLayout.NORTH, languageC, 0, SpringLayout.NORTH, languageL);
         layout.putConstraint(SpringLayout.EAST, ok, -70, SpringLayout.EAST, this);
         layout.putConstraint(SpringLayout.SOUTH, ok, -70, SpringLayout.SOUTH, this);
         layout.putConstraint(SpringLayout.WEST, cancelB, 50, SpringLayout.WEST, this);
@@ -192,7 +206,7 @@ public class SettingsFrame extends JFrame {
         MainFrame.setComponentSize(removeFilterB,new Dimension(175,30));
         removeFilterB.setFont(new Font("Tahoma",Font.PLAIN,13));
         removeFilterB.addActionListener(new ButtonHandler(this));
-        JLabel filterL = new JLabel("Enetr a site to filter: ");
+        filterL = new JLabel("Enetr a site to filter: ");
         filterL.setForeground(Color.WHITE);
         filterL.setFont(new Font("Tahoma", Font.PLAIN, 14));
         filterT = new JTextField();
@@ -206,6 +220,8 @@ public class SettingsFrame extends JFrame {
         jList.setFont(new Font("Tahoma", Font.PLAIN, 13));
         JScrollPane jScrollPane = new JScrollPane(jList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         MainFrame.setComponentSize(jScrollPane, new Dimension(370, 240));
+
+        changeLanguage();
         filterPanel.add(jScrollPane);
         filterPanel.add(filterT);
         filterPanel.add(filterL);
@@ -244,6 +260,21 @@ public class SettingsFrame extends JFrame {
                 close();
             }
         });
+    }
+
+    public void changeLanguage(){
+        setTitle(Manager.getInstance().getWords().get(4));
+        limitCHB.setText(Manager.getInstance().getWords().get(5));
+        limitL.setText(Manager.getInstance().getWords().get(6));
+        directoryAddressL.setText(Manager.getInstance().getWords().get(7));
+        languageL.setText(Manager.getInstance().getWords().get(8));
+        lookAndFeelL.setText(Manager.getInstance().getWords().get(9));
+        directoryB.setText(Manager.getInstance().getWords().get(10));
+        ok.setText(Manager.getInstance().getWords().get(11));
+        cancelB.setText(Manager.getInstance().getWords().get(12));
+        addFilterB.setText(Manager.getInstance().getWords().get(13));
+        removeFilterB.setText(Manager.getInstance().getWords().get(14));
+        filterL.setText(Manager.getInstance().getWords().get(15));
     }
 
     public void close() {
@@ -311,7 +342,8 @@ public class SettingsFrame extends JFrame {
                     FileUtils.write("files\\filter.jdm",filter);
                     String settings = Manager.getInstance().getLimitDownload() + "\n" + Manager.getInstance().getDirectory() + "\n" + Manager.getInstance().getLookAndFeelS();
                     FileUtils.write("files\\settings.jdm", settings);
-                    manager.setMainFrameUI();
+                    manager.setLanguage((String) languageC.getSelectedItem());
+                    manager.changeLangage();
                     close();
                 }
             }

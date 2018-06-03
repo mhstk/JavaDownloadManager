@@ -49,6 +49,13 @@ public class Menu extends JPanel {
 
     }
 
+    public void changeLanguage(){
+        processingB.setText(Manager.getInstance().getWords().get(0));
+        completedB.setText(Manager.getInstance().getWords().get(1));
+        queueB.setText(Manager.getInstance().getWords().get(2));
+        settingsB.setText(Manager.getInstance().getWords().get(3));
+    }
+
     void setPlace() {
         Dimension d = getSize();
         System.out.println(d);

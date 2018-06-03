@@ -20,6 +20,8 @@ public class Manager {
     private ArrayList<String> filter;
     private HashMap<DownloadItem, HttpDownloadUtility> downloading;
     private String center;
+    private String language;
+    private ArrayList<String> words ;
 
     private Manager(String lookAndFeelS, int limitDownload, String directory, ArrayList<String> filter) {
 
@@ -36,6 +38,8 @@ public class Manager {
         selected = new ArrayList<>();
         downloading = new HashMap<>();
         center = "Processing";
+        language = "English";
+        words = FileUtils.readLanguage(language);
 
     }
 
@@ -465,6 +469,14 @@ public class Manager {
         downloading.remove(downloadItem);
         FileUtils.removeAnObject(fileProcessingAddress, downloadItem);
 
+        iterator = selected.iterator();
+        while (iterator.hasNext()){
+            DownloadPanel downloadPanel = (DownloadPanel) iterator.next();
+            if (downloadPanel.getDownloadItem().equals(downloadItem)){
+                iterator.remove();
+            }
+        }
+
 //        iterator = MainFrame.getInstance().getCompletedPanel().downloadPanels.iterator();
 //        while (iterator.hasNext()) {
 //            DownloadPanel downloadPanel1 = (DownloadPanel) iterator.next();
@@ -602,11 +614,34 @@ public class Manager {
         mainFrame.getQueuePanel().reSet();
     }
 
+    public void changeLangage(){
+        words = FileUtils.readLanguage(language);
+        mainFrame.getMenu().changeLanguage();
+        mainFrame.getFrameMenuBar().changeLanguage();
+
+    }
+
     public String getCenter() {
         return center;
     }
 
     public void setCenter(String center) {
         this.center = center;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public ArrayList<String> getWords() {
+        return words;
+    }
+
+    public void setWords(ArrayList<String> words) {
+        this.words = words;
     }
 }
