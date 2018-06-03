@@ -4,6 +4,8 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Random;
 
@@ -41,7 +43,7 @@ public class NewDownFrame extends JFrame {
 
         keyHandler = new KeyHandler(this);
         mainPanel = new JPanel();
-        mainPanel.setBackground(new Color(43,49,52));
+        mainPanel.setBackground(new Color(43, 49, 52));
         MainFrame.setComponentSize(mainPanel, getSize());
         layout = new SpringLayout();
         linkAddressT = new JTextField();
@@ -93,7 +95,7 @@ public class NewDownFrame extends JFrame {
 
             public void changed() {
                 sizeL.setText("");
-                Thread thread = new Thread(){
+                Thread thread = new Thread() {
                     @Override
                     public void run() {
                         super.run();
@@ -102,11 +104,14 @@ public class NewDownFrame extends JFrame {
                             HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
                             int responseCode = httpConn.getResponseCode();
                             // always check HTTP response code first
+                            httpConn.setConnectTimeout(5000);
                             if (responseCode == HttpURLConnection.HTTP_OK) {
-                                sizeL.setText(String.format("File's size : %.2f",httpConn.getContentLength()/1000000.0)+" (mb)");
+                                sizeL.setText(String.format("File's size : %.2f", httpConn.getContentLength() / 1000000.0) + " (mb)");
                             } else {
                                 System.out.println("No file to download. Server replied HTTP code: " + responseCode);
                             }
+                        } catch (SocketTimeoutException e) {
+
                         } catch (Exception e) {
 
                         }
@@ -242,12 +247,16 @@ public class NewDownFrame extends JFrame {
                 URL url = new URL(address);
                 HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
                 int responseCode = httpConn.getResponseCode();
+                httpConn.setConnectTimeout(5000);
                 // always check HTTP response code first
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-                    newDownFrame.setDownloadSize(httpConn.getContentLength()/1000000.0);
+                    newDownFrame.setDownloadSize(httpConn.getContentLength() / 1000000.0);
                 } else {
                     System.out.println("No file to download. Server replied HTTP code: " + responseCode);
                 }
+            } catch (SocketTimeoutException e) {
+                JOptionPane.showMessageDialog(MainFrame.getInstance(), "Socket time out. ", "Error", JOptionPane.ERROR_MESSAGE);
+
             } catch (Exception e) {
 
             }
@@ -257,10 +266,10 @@ public class NewDownFrame extends JFrame {
 
         }
 
-        public boolean checkFilter(){
+        public boolean checkFilter() {
             String link = newDownFrame.getLinkAddressT().getText();
-            for (String filtered : Manager.getInstance().getFilter()){
-                if (link.contains(filtered)){
+            for (String filtered : Manager.getInstance().getFilter()) {
+                if (link.contains(filtered)) {
                     return false;
                 }
             }
