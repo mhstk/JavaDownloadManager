@@ -150,6 +150,10 @@ public class MainFrame extends JFrame {
 
     }
 
+    public void setFrameMenuBar(MyMenu frameMenuBar) {
+        this.frameMenuBar = frameMenuBar;
+    }
+
     public void setSize(){
         Dimension d = getSize();
         setComponentSize(menu, new Dimension(d.width * 3 / 10, d.height));
@@ -351,6 +355,7 @@ public class MainFrame extends JFrame {
             exit = new JMenuItem("Exit");
             about = new JMenuItem("About");
 
+
             about.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
             about.setMnemonic('A');
 
@@ -397,6 +402,21 @@ public class MainFrame extends JFrame {
             menuBar.add(help);
             MenuHandler menuHandler = new MenuHandler();
 
+        }
+
+        public void changeLanguage(){
+
+            download.setText(Manager.getInstance().getWords().get(16));
+            help.setText(Manager.getInstance().getWords().get(17));
+            newDownload.setText(Manager.getInstance().getWords().get(18));
+            resume.setText(Manager.getInstance().getWords().get(19));
+            pause.setText(Manager.getInstance().getWords().get(20));
+            cancel.setText(Manager.getInstance().getWords().get(21));
+            remove.setText(Manager.getInstance().getWords().get(22));
+            settings.setText(Manager.getInstance().getWords().get(23));
+            export.setText(Manager.getInstance().getWords().get(24));
+            about.setText(Manager.getInstance().getWords().get(25));
+            exit.setText(Manager.getInstance().getWords().get(26));
         }
 
         public void downloadSelected() {
