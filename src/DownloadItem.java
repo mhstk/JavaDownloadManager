@@ -1,4 +1,6 @@
+import javax.swing.*;
 import java.io.Serializable;
+import java.util.Date;
 
 public class DownloadItem implements Serializable {
     String name;
@@ -7,8 +9,9 @@ public class DownloadItem implements Serializable {
     double speedDownload;
     double size;
     double downloadedSize;
-    double percent;
-    public Time startedTime;
+    private Date startedTime;
+    boolean inQueue;
+
 
 
 
@@ -16,23 +19,21 @@ public class DownloadItem implements Serializable {
     public DownloadItem(String name) {
 
         this.name = name;
-        startedTime = new Time();
     }
 
 
 
-    public void setInfo(double size , double speed , double downloaded ,Time startedTime , String serverAddress,String savedAddress){
+    public void setInfo(double size , double speed , double downloaded , String serverAddress,String savedAddress){
         setSize(size);
         setSpeedDownload(speed);
         setDownloadedSize(downloaded);
-        setPercent(downloadedSize*100.0/size);
-        this.startedTime = startedTime;
         setSavedAddress(savedAddress);
         setServerAddress(serverAddress);
     }
 
-    public void computePercent(){
-        setPercent(downloadedSize*100.0/size);
+
+    public void setStartedTime(Date startedTime) {
+        this.startedTime = startedTime;
     }
 
     public void resumeDownload(){
@@ -41,7 +42,6 @@ public class DownloadItem implements Serializable {
 
     public void updateInfo(double speed , double downloaded ){
         this.downloadedSize = downloaded;
-        setPercent(downloaded*100.0/size);
     }
 
 
@@ -81,6 +81,10 @@ public class DownloadItem implements Serializable {
         return speedDownload;
     }
 
+    public Date getStartedTime() {
+        return startedTime;
+    }
+
     public void setSpeedDownload(double speedDownload) {
         this.speedDownload = speedDownload;
     }
@@ -93,13 +97,7 @@ public class DownloadItem implements Serializable {
         this.downloadedSize = downloadedSize;
     }
 
-    public double getPercent() {
-        return percent;
-    }
 
-    public void setPercent(double percent) {
-        this.percent = percent;
-    }
 
     @Override
     public String toString() {

@@ -2,10 +2,19 @@ import javax.swing.*;
 import java.awt.*;
 
 public class CompletedDP extends DownloadPanel {
+    ImageIcon doneIcon ;
 
     CompletedDP(DownloadItem downloadItem) {
         super(downloadItem);
         sizeL.setText(downloadItem.getSize() + " (mb)");
+
+        MainFrame.setComponentSize(iconL,new Dimension(50,50));
+        doneIcon = ToolBar.getScaledImage("UIPic\\done.png",iconL);
+        iconL.setIcon(doneIcon);
+
+        add(iconL);
+        add(startedTimeL);
+
     }
 
 
@@ -50,17 +59,21 @@ public class CompletedDP extends DownloadPanel {
 
     public void setPlace() {
 
-        add(numberL);
-        add(nameL);
-        add(sizeL);
-        add(startedTimeL);
-        layout.putConstraint(SpringLayout.WEST, numberL, getWidth() / 50, SpringLayout.WEST, this);
-        layout.putConstraint(SpringLayout.NORTH, numberL, 34, SpringLayout.NORTH, this);
-        layout.putConstraint(SpringLayout.WEST, nameL, getWidth() * 4 / 50, SpringLayout.WEST, this);
+        //add(numberL);
+//        add(nameL);
+//        add(sizeL);
+//        add(startedTimeL);
+//        layout.putConstraint(SpringLayout.WEST, numberL, getWidth() / 50, SpringLayout.WEST, this);
+//        layout.putConstraint(SpringLayout.NORTH, numberL, 34, SpringLayout.NORTH, this);
+
+        layout.putConstraint(SpringLayout.NORTH, iconL, 23, SpringLayout.NORTH, this);
+        layout.putConstraint(SpringLayout.WEST, iconL,40 , SpringLayout.WEST, this);
+
+        layout.putConstraint(SpringLayout.WEST, nameL, getWidth() * 9 / 50, SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, nameL, 38, SpringLayout.NORTH, this);
-        layout.putConstraint(SpringLayout.WEST, sizeL, getWidth() * 52 / 100, SpringLayout.WEST, this);
+        layout.putConstraint(SpringLayout.EAST, sizeL, -40, SpringLayout.EAST, this);
         layout.putConstraint(SpringLayout.NORTH, sizeL, 34, SpringLayout.NORTH, this);
-        layout.putConstraint(SpringLayout.WEST, startedTimeL, getWidth() * 52 / 100, SpringLayout.WEST, this);
+        layout.putConstraint(SpringLayout.EAST, startedTimeL, -40, SpringLayout.EAST, this);
         layout.putConstraint(SpringLayout.NORTH, startedTimeL, 58, SpringLayout.NORTH, this);
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
 

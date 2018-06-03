@@ -32,6 +32,21 @@ public class FileUtils {
         }
     }
 
+    public static void writeAll(String fileName , ArrayList<DownloadPanel> list){
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(fileName)));
+            for (int i=0 ; i<list.size(); i++) {
+                DownloadItem downloadItem = list.get(i).getDownloadItem();
+                oos.writeObject(downloadItem);
+            }
+            oos.writeObject(null);
+            oos.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static ArrayList read(String fileName) {
         ArrayList<Object> objects = new ArrayList<>();
@@ -41,7 +56,6 @@ public class FileUtils {
             ois = new ObjectInputStream(new FileInputStream(new File(fileName)));
             while (true){
                 Object o = ois.readObject();
-                System.out.println(o);
                 if (o==null){
                     break;
                 }else {
@@ -61,7 +75,7 @@ public class FileUtils {
 
     public static void removeAnObject(String fileName, Object object) {
         DownloadItem downloadItemO = (DownloadItem) object;
-        System.out.println("Object : "+ downloadItemO);
+       // System.out.println("Object : "+ downloadItemO);
         ArrayList<Object> objects = new ArrayList<>();
         try {
 
@@ -77,18 +91,18 @@ public class FileUtils {
             ois.close();
 
 
-            System.out.println("size : "+objects.size());
+          //  System.out.println("size : "+objects.size());
             Iterator it = objects.iterator();
             while (it.hasNext()){
                 DownloadItem downloadItem = (DownloadItem) it.next();
-                System.out.println(downloadItem);
+          //      System.out.println(downloadItem);
                 if (downloadItem.equals(downloadItemO)){
-                    System.out.println("founded  :  "+downloadItem);
+            //        System.out.println("founded  :  "+downloadItem);
                     it.remove();
                 }
             }
 
-            System.out.println("size : "+objects.size());
+        //    System.out.println("size : "+objects.size());
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(fileName)));
             for (Object object1 : objects) {
                 oos.writeObject(object1);
@@ -154,6 +168,24 @@ public class FileUtils {
         return directory;
     }
 
+    public static ArrayList<String> readFiltered(){
+        ArrayList<String> filter = new ArrayList<>();
+        String fileName = "files\\filter.jdm";
+        try {
+            Scanner scanner = new Scanner(new FileInputStream(fileName));
+            String line ;
+            while (scanner.hasNextLine()){
+                line = scanner.nextLine();
+//                System.out.println(line);
+                filter.add(line);
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return filter;
+    }
+
     public static void writeRemoved(String fileName,Object object){
         try {
             PrintStream ps = new PrintStream( new FileOutputStream(fileName,true));
@@ -161,6 +193,16 @@ public class FileUtils {
             ps.close();
 
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void clear(String fileName){
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(fileName)));
+            oos.writeObject(null);
+            oos.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class DownloadPanel extends JPanel {
     protected DownloadItem downloadItem;
@@ -10,8 +12,11 @@ public class DownloadPanel extends JPanel {
     JLabel speedL;
     JLabel sizeL;
     JLabel numberL;
+    JLabel iconL;
+    JLabel queueL;
     JLabel startedTimeL;
     SpringLayout layout;
+
 
     DownloadPanel(DownloadItem downloadItem) {
         this.downloadItem = downloadItem;
@@ -25,6 +30,10 @@ public class DownloadPanel extends JPanel {
         percentL = new JLabel();
         speedL = new JLabel();
         sizeL = new JLabel();
+        iconL = new JLabel();
+        queueL = new JLabel();
+        queueL.setFont(new Font("Arial", Font.PLAIN, 16));
+        queueL.setForeground(Color.WHITE);
         startedTimeL = new JLabel();
         layout = new SpringLayout();
         setLayout(layout);
@@ -43,46 +52,32 @@ public class DownloadPanel extends JPanel {
 
 
         nameL.setText(downloadItem.getName());
-        percentL.setText(String.format("%.2f%%", downloadItem.getPercent()));
+//        percentL.setText(String.format("%.2f%%", downloadItem.getPercent()));
+        percentL.setText(String.format("%.2f%%", (downloadItem.downloadedSize)*100.0/downloadItem.size));
         speedL.setText(downloadItem.getSpeedDownload() + " (mb/s)");
-        sizeL.setText(downloadItem.getDownloadedSize() + "/" + downloadItem.getSize() + " (mb)");
-        startedTimeL.setText("Started Time : " +downloadItem.startedTime.toString());
+        sizeL.setText(String.format("%.2f",downloadItem.getDownloadedSize()) + " / " + String.format("%.2f",downloadItem.getSize()) + " (mb)");
+        DateFormat df = new SimpleDateFormat("HH:mm:ss  (dd/MM/yy)");
+        startedTimeL.setText("Started Time : " +df.format(downloadItem.getStartedTime()));
+
 
 
         add(nameL);
         add(sizeL);
-        add(numberL);
         setPlace();
 
     }
 
     public void updateInfo() {
-        percentL.setText(String.format("%.2f%%", downloadItem.getPercent()));
         speedL.setText(downloadItem.getSpeedDownload() + " (mb/s)");
-        sizeL.setText(downloadItem.getDownloadedSize() + "/" + downloadItem.getSize() + " (mb)");
-        System.out.println(downloadItem.getDownloadedSize());
+        sizeL.setText(String.format("%.2f",downloadItem.getDownloadedSize()) + "/" +String.format("%.2f",downloadItem.getSize()) + " (mb)");
+        percentL.setText(String.format("%.2f%%" , downloadItem.downloadedSize*100.0/downloadItem.size));
+        jProgressBar.setValue((int)(downloadItem.downloadedSize*10000/downloadItem.size));
         revalidate();
         updateUI();
 
     }
 
     public void setPlace() {
-
-//        layout.putConstraint(SpringLayout.WEST, nameL, getWidth() / 10, SpringLayout.WEST, this);
-//        layout.putConstraint(SpringLayout.NORTH, nameL, 10, SpringLayout.NORTH, this);
-//        layout.putConstraint(SpringLayout.EAST, percentL, -getWidth() / 10, SpringLayout.EAST, this);
-//        layout.putConstraint(SpringLayout.NORTH, percentL, 10, SpringLayout.NORTH, this);
-//        layout.putConstraint(SpringLayout.WEST, speedL, getWidth() / 10, SpringLayout.WEST, this);
-//        layout.putConstraint(SpringLayout.SOUTH, speedL, -20, SpringLayout.SOUTH, this);
-//        layout.putConstraint(SpringLayout.EAST, sizeL, -getWidth() / 10, SpringLayout.EAST, this);
-//        layout.putConstraint(SpringLayout.SOUTH, sizeL, -20, SpringLayout.SOUTH, this);
-//        layout.putConstraint(SpringLayout.WEST, numberL, getWidth() / 50, SpringLayout.WEST, this);
-//        layout.putConstraint(SpringLayout.NORTH, numberL, 34, SpringLayout.NORTH, this);
-//
-//        MainFrame.setComponentSize(jProgressBar, new Dimension(getWidth() * 79 / 100, 17));
-//        layout.putConstraint(SpringLayout.WEST, jProgressBar, getWidth() / 10, SpringLayout.WEST, this);
-//        layout.putConstraint(SpringLayout.NORTH, jProgressBar, 38, SpringLayout.NORTH, this);
-//        setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 
     }
@@ -101,6 +96,10 @@ public class DownloadPanel extends JPanel {
 
     public JProgressBar getjProgressBar() {
         return jProgressBar;
+    }
+
+    public String info() {
+        return  downloadItem.name + "\n"+downloadItem.serverAddress+"\n"+downloadItem.savedAddress+"\n"+downloadItem.size+"\n"+downloadItem.getStartedTime();
     }
 
 }

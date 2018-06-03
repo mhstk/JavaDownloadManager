@@ -4,7 +4,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.logging.SocketHandler;
 
 
 public class HttpDownloadUtility extends SwingWorker {
@@ -36,12 +38,17 @@ public class HttpDownloadUtility extends SwingWorker {
 
     @Override
     protected Boolean doInBackground() throws Exception {
+        try{
+
+
+
         URL url = new URL(fileURL);
         HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
         String saveFilePath = saveDir + File.separator + downloadPanel.getDownloadItem().getName();
         File file = new File(saveFilePath);
         System.out.println(file.length());
         httpConn.setRequestProperty("Range", "bytes=" + file.length() + "-" + size);
+        httpConn.setConnectTimeout(5000);
         int responseCode = httpConn.getResponseCode();
 
         // always check HTTP response code first
@@ -105,7 +112,7 @@ public class HttpDownloadUtility extends SwingWorker {
 
                 }
                 percent = (double) (file.length()) * 100.0 / size;
-                downloadPanel.getDownloadItem().setDownloadedSize(file.length());
+                downloadPanel.getDownloadItem().setDownloadedSize(file.length() / 1000000.0);
                 downloadPanel.percentL.setText(String.format("%.2f%%", percent));
                 downloadPanel.sizeL.setText(String.format("%.2f", file.length() / 1000000.0) + " / " + String.format("%.2f", size / 1000000.0) + " (mb)");
                 downloadPanel.jProgressBar.setValue((int) percent * 100);
@@ -121,6 +128,10 @@ public class HttpDownloadUtility extends SwingWorker {
                     break;
                 }
             }
+        //catch(SocketTimeoutException e)
+
+
+
             System.out.println("out");
 
             outputStream.close();
@@ -131,8 +142,15 @@ public class HttpDownloadUtility extends SwingWorker {
             }
         } else {
             System.out.println("No file to download. Server replied HTTP code: " + responseCode);
+            JOptionPane.showMessageDialog(MainFrame.getInstance(),"Error. Server replied HTTP code: " + responseCode, "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
         httpConn.disconnect();
+        }catch (SocketTimeoutException e){
+            JOptionPane.showMessageDialog(MainFrame.getInstance(), "Socket time out. ", "Error", JOptionPane.ERROR_MESSAGE);
+
+            return false;
+        }
         return true;
     }
 

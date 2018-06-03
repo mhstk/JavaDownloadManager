@@ -4,6 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class InfoFrame extends JFrame {
 
@@ -43,20 +47,28 @@ public class InfoFrame extends JFrame {
     public void action(){
         setTitle(" <<"+downloadItem.getName() + ">>'s info");
         mainPanel = new JPanel();
+        mainPanel.setBackground(new Color(43,49,52));
         MainFrame.setComponentSize(mainPanel,getSize());
         layout = new SpringLayout();
         directoryAddressL = new JLabel("Directory :  " + downloadItem.getSavedAddress());
         directoryAddressL.setFont(new Font("Tahoma",Font.LAYOUT_LEFT_TO_RIGHT,14));
+        directoryAddressL.setForeground(Color.WHITE);
         linkAddressL = new JLabel("URL :  "+downloadItem.getServerAddress());
         linkAddressL.setFont(new Font("Tahoma",Font.LAYOUT_LEFT_TO_RIGHT,14));
+        linkAddressL.setForeground(Color.WHITE);
         nameL = new JLabel(downloadItem.getName());
         nameL.setFont(new Font("Courier New",Font.BOLD,35));
+        nameL.setForeground(Color.WHITE);
         sizeL = new JLabel("Size :  "+downloadItem.getSize());
         sizeL.setFont(new Font("Tahoma",Font.LAYOUT_LEFT_TO_RIGHT,14));
+        sizeL.setForeground(Color.WHITE);
         downloadedSizeL = new JLabel("Downloaded :  " + downloadItem.getDownloadedSize());
         downloadedSizeL.setFont(new Font("Tahoma",Font.LAYOUT_LEFT_TO_RIGHT,14));
-        startedTimeL = new JLabel("Started Time : "+downloadItem.startedTime.getHour()+":"+downloadItem.startedTime.getMin() + " ("+downloadItem.startedTime.getMonth()+"/"+downloadItem.startedTime.getDay()+"/"+downloadItem.startedTime.getYear()+")");
+        downloadedSizeL.setForeground(Color.WHITE);
+        DateFormat df = new SimpleDateFormat("HH:mm:ss  (dd/MM/yy)");
+        startedTimeL = new JLabel("Started Time : "+df.format(downloadItem.getStartedTime()));
         startedTimeL.setFont(new Font("Tahoma",Font.LAYOUT_LEFT_TO_RIGHT,13));
+        startedTimeL.setForeground(Color.WHITE);
         directoryB = new JButton("Open Folder") ;
         MainFrame.setComponentSize(directoryB,new Dimension(100,30));
         directoryB.addActionListener(new ButtonHandler());
@@ -121,7 +133,14 @@ public class InfoFrame extends JFrame {
                 close();
             }
             if (e.getSource() == directoryB){
-
+                File file = new File(downloadItem.savedAddress);
+                if (file.exists()) {
+                    try {
+                        Desktop.getDesktop().open(file);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
             }
         }
     }

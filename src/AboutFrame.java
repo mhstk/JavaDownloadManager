@@ -22,23 +22,30 @@ public class AboutFrame extends JFrame {
         setIconImage(MainFrame.getInstance().icon);
 
         mainPanel = new JPanel();
+        mainPanel.setBackground(new Color(43,49,52));
         MainFrame.setComponentSize(mainPanel, getSize());
         layout = new SpringLayout();
 
         ok = new JButton("OK");
         nameL = new JLabel("JDM 1.0");
         nameL.setFont(new Font("Courier New", Font.BOLD, 35));
+        nameL.setForeground(Color.WHITE);
         programmerNameL = new JLabel("Author :  Mohammad Hosein Setak");
         programmerNameL.setFont(new Font("Tahoma", Font.LAYOUT_LEFT_TO_RIGHT, 14));
+        programmerNameL.setForeground(Color.WHITE);
         programmerStudentNumL = new JLabel("Student number : 9631811");
         programmerStudentNumL.setFont(new Font("Tahoma", Font.LAYOUT_LEFT_TO_RIGHT, 14));
+        programmerStudentNumL.setForeground(Color.WHITE);
         startedTimeL = new JLabel("Started :  5/11/2018");
         startedTimeL.setFont(new Font("Tahoma", Font.LAYOUT_LEFT_TO_RIGHT, 14));
+        startedTimeL.setForeground(Color.WHITE);
         finishedTimeL = new JLabel("finished :  ...");
         finishedTimeL.setFont(new Font("Tahoma", Font.LAYOUT_LEFT_TO_RIGHT, 14));
+        finishedTimeL.setForeground(Color.WHITE);
         info = new JLabel();
         info.setText("<html>This app is for downloading programs, pictures,<br> movies, etc everything you want from internet.<br>It's written in java language and that is why it's<br>called JDM.<br>Enjoy using this app<br>and thank U for choosing us.</html>");
         info.setFont(new Font("Tahoma", Font.HANGING_BASELINE, 12));
+        info.setForeground(Color.WHITE);
 
         mainPanel.add(nameL);
         mainPanel.add(programmerNameL);

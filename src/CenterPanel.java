@@ -32,16 +32,16 @@ public class CenterPanel extends JPanel {
     public void setPanelSize() {
         if (downloadPanels.size() >= 6) {
             MainFrame.setComponentSize(this, new Dimension(getWidth(), (660 / 6) * downloadPanels.size()));
-        }else {
-            MainFrame.setComponentSize(this,new Dimension(getWidth(),660));
+        } else {
+            MainFrame.setComponentSize(this, new Dimension(getWidth(), 660));
         }
         revalidate();
         updateUI();
     }
 
-    public void reSize(){
-        for (int i=0 ; i<downloadPanels.size();i++){
-            MainFrame.setComponentSize(downloadPanels.get(i),new Dimension(getWidth(),660/6));
+    public void reSize() {
+        for (int i = 0; i < downloadPanels.size(); i++) {
+            MainFrame.setComponentSize(downloadPanels.get(i), new Dimension(getWidth(), 660 / 6));
             layout.putConstraint(SpringLayout.WEST, downloadPanels.get(i), 0, SpringLayout.WEST, this);
             layout.putConstraint(SpringLayout.NORTH, downloadPanels.get(i), i * downloadPanels.get(i).getHeight() + i, SpringLayout.NORTH, this);
             downloadPanels.get(i).setPlace();
@@ -54,21 +54,46 @@ public class CenterPanel extends JPanel {
     public void addDownload(DownloadPanel downloadPanel) {
         downloadItems.add(downloadPanel.getDownloadItem());
         this.downloadPanels.add(downloadPanel);
-        downloadPanel.numberL.setText(this.downloadPanels.size() + ".");
+       // downloadPanel.numberL.setText(this.downloadPanels.size() + ".");
         MainFrame.setComponentSize(downloadPanel, new Dimension(getWidth(), 660 / 6));
         downloadPanel.addMouseListener(myMouseListener);
 
         int i = downloadPanels.indexOf(downloadPanel);
         downloadPanels.get(i).setPlace();
-        System.out.println(i);
         add(downloadPanels.get(i));
         layout.putConstraint(SpringLayout.WEST, downloadPanels.get(i), 0, SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, downloadPanels.get(i), i * downloadPanels.get(i).getHeight() + i, SpringLayout.NORTH, this);
 
     }
 
-    public void reSet(){
-        for (int i=0 ; i<downloadPanels.size();i++){
+    public void search(String text) {
+        removeAll();
+        if (text.equals("")) {
+            int i = 0;
+            for (DownloadPanel downloadPanel : downloadPanels) {
+                downloadPanel.setPlace();
+                add(downloadPanel);
+                layout.putConstraint(SpringLayout.WEST, downloadPanel, 0, SpringLayout.WEST, this);
+                layout.putConstraint(SpringLayout.NORTH, downloadPanel, i * downloadPanels.get(i).getHeight() + i, SpringLayout.NORTH, this);
+                i++;
+            }
+        } else {
+            int i = 0;
+            for (DownloadPanel downloadPanel : downloadPanels) {
+                if (downloadPanel.info().toLowerCase().contains(text)) {
+                    downloadPanel.setPlace();
+                    add(downloadPanel);
+                    layout.putConstraint(SpringLayout.WEST, downloadPanel, 0, SpringLayout.WEST, this);
+                    layout.putConstraint(SpringLayout.NORTH, downloadPanel, i * downloadPanels.get(i).getHeight() + i, SpringLayout.NORTH, this);
+                    i++;
+                }
+            }
+        }
+        updateUI();
+    }
+
+    public void reSet() {
+        for (int i = 0; i < downloadPanels.size(); i++) {
             downloadPanels.get(i).setPlace();
             layout.putConstraint(SpringLayout.WEST, downloadPanels.get(i), 0, SpringLayout.WEST, this);
             layout.putConstraint(SpringLayout.NORTH, downloadPanels.get(i), i * downloadPanels.get(i).getHeight() + i, SpringLayout.NORTH, this);
@@ -82,7 +107,6 @@ public class CenterPanel extends JPanel {
     public void updateLabels() {
         for (int i = 0; i < downloadPanels.size(); i++) {
             downloadPanels.get(i).updateInfo();
-            downloadPanels.get(i).numberL.setText((i + 1) + ".");
         }
     }
 
@@ -90,8 +114,8 @@ public class CenterPanel extends JPanel {
 
         public void mouseEntered(MouseEvent e) {
             DownloadPanel downloadPanel = (DownloadPanel) e.getSource();
-            if (!selected.contains(downloadPanel)){
-                downloadPanel.setBackground(new Color(7,38,51));
+            if (!selected.contains(downloadPanel)) {
+                downloadPanel.setBackground(new Color(7, 38, 51));
                 downloadPanel.setOpaque(true);
                 updateUI();
                 revalidate();
@@ -103,7 +127,7 @@ public class CenterPanel extends JPanel {
         @Override
         public void mouseExited(MouseEvent e) {
             DownloadPanel downloadPanel = (DownloadPanel) e.getSource();
-            if (!selected.contains(downloadPanel)){
+            if (!selected.contains(downloadPanel)) {
                 downloadPanel.setOpaque(false);
                 revalidate();
                 updateUI();
@@ -111,18 +135,18 @@ public class CenterPanel extends JPanel {
             }
         }
 
-        public void rightClicked(MouseEvent e){
+        public void rightClicked(MouseEvent e) {
             DownloadPanel downloadPanel = (DownloadPanel) e.getSource();
             InfoFrame infoFrame = new InfoFrame();
             infoFrame.setDownloadItem(downloadPanel);
             infoFrame.action();
         }
 
-        public void leftOneClicked(MouseEvent e){
+        public void leftOneClicked(MouseEvent e) {
             DownloadPanel downloadPanel = (DownloadPanel) e.getSource();
             if (selected.contains(downloadPanel)) {
                 selected.remove(downloadPanel);
-                downloadPanel.setBackground(new Color(7,38,51));
+                downloadPanel.setBackground(new Color(7, 38, 51));
                 downloadPanel.setOpaque(true);
                 revalidate();
                 updateUI();
@@ -138,7 +162,7 @@ public class CenterPanel extends JPanel {
             }
         }
 
-        public void leftDoubleClicked(MouseEvent e){
+        public void leftDoubleClicked(MouseEvent e) {
 
         }
 
@@ -146,10 +170,10 @@ public class CenterPanel extends JPanel {
             if (e.isMetaDown()) {
                 rightClicked(e);
             } else {
-                if (e.getClickCount()>=2){
+                if (e.getClickCount() >= 2) {
                     leftDoubleClicked(e);
                 }
-                    leftOneClicked(e);
+                leftOneClicked(e);
 
 
             }
@@ -162,11 +186,12 @@ public class CenterPanel extends JPanel {
         }
 
     }
-    public void selected(){
+
+    public void selected() {
         Manager.getInstance().downloadSelected(selected);
     }
 
-    public void unSelected(){
+    public void unSelected() {
         Manager.getInstance().downloadUnSelected();
     }
 }

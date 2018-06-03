@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicProgressBarUI;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 
 
 public class MainFrame extends JFrame {
@@ -76,9 +77,9 @@ public class MainFrame extends JFrame {
     }
 
     private MainFrame() {
-        setLocation(200, 60);
-        setPreferredSize(new Dimension(960, 660));
-        setSize(960, 660);
+        setLocation(170, 40);
+        setPreferredSize(new Dimension(1040, 760));
+        setSize(1040, 760);
         setTitle("Java Download Manager");
         setIconImage(icon);
 
@@ -120,11 +121,13 @@ public class MainFrame extends JFrame {
         mainPanel.revalidate();
         mainPanel.updateUI();
         tray();
+        Component thiss = this;
+        update();
 
         this.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
                 Dimension d = getSize();
-                Dimension minD = new Dimension(960, 660);
+                Dimension minD = new Dimension(1040, 760);
                 if (minD.height > d.height || minD.width > d.width) {
                     d = minD;
                 }
@@ -137,6 +140,10 @@ public class MainFrame extends JFrame {
                 setComponentSize(toolBar, new Dimension(d.width * 7 / 10, d.height * 3 / 20));
 
                 update();
+                mainPanel.revalidate();
+        mainPanel.updateUI();
+               // revalidate();
+                //SwingUtilities.updateComponentTreeUI(thiss);
             }
         });
 
@@ -162,9 +169,7 @@ public class MainFrame extends JFrame {
         queuePanel.reSize();
         completedPanel.reSize();
         toolBar.setPlace();
-        mainPanel.revalidate();
-        mainPanel.updateUI();
-        SwingUtilities.updateComponentTreeUI(this);
+
         for (int i = 0; i < processingPanel.downloadPanels.size(); i++) {
             processingPanel.downloadPanels.get(i).getjProgressBar().setUI(new BasicProgressBarUI() {
                 @Override
@@ -232,7 +237,7 @@ public class MainFrame extends JFrame {
                 }
             });
         }
-        revalidate();
+//        revalidate();
     }
 
 
@@ -326,6 +331,7 @@ public class MainFrame extends JFrame {
         JMenuItem cancel;
         JMenuItem remove;
         JMenuItem settings;
+        JMenuItem export;
         JMenuItem about;
 
         JMenuItem exit;
@@ -341,6 +347,7 @@ public class MainFrame extends JFrame {
             cancel = new JMenuItem("Cancel");
             remove = new JMenuItem("Remove");
             settings = new JMenuItem("Settings");
+            export = new JMenuItem("Export");
             exit = new JMenuItem("Exit");
             about = new JMenuItem("About");
 
@@ -381,6 +388,7 @@ public class MainFrame extends JFrame {
             download.add(cancel);
             download.add(remove);
             download.addSeparator();
+            download.add(export);
             download.add(settings);
             download.addSeparator();
             download.add(exit);
@@ -402,6 +410,13 @@ public class MainFrame extends JFrame {
             remove.setEnabled(true);
         }
 
+        public void downloadQueuePSelected(){
+            resume.setEnabled(false);
+            pause.setEnabled(false);
+            remove.setEnabled(true);
+            cancel.setEnabled(true);
+        }
+
         public void downloadUnSelected() {
             resume.setEnabled(false);
             pause.setEnabled(false);
@@ -421,6 +436,7 @@ public class MainFrame extends JFrame {
                 settings.addActionListener(this);
                 exit.addActionListener(this);
                 about.addActionListener(this);
+                export.addActionListener(this);
 
             }
 
@@ -445,11 +461,20 @@ public class MainFrame extends JFrame {
                 if (e.getSource() == settings) {
                     Manager.getInstance().settingFrame();
                 }
+                if (e.getSource() == export) {
+                    File file = new File("File.zip");
+                    if (file.exists()){
+                        file.delete();
+                    }
+                    ZipUtils zipUtils = new ZipUtils("File.zip","files");
+                    zipUtils.generateFileList(new File("files"));
+                    zipUtils.zipIt("File.zip");
+                }
                 if (e.getSource() == exit) {
                     Manager.getInstance().exit();
                 }
                 if (e.getSource() == about) {
-                    AboutFrame aboutFrame = new AboutFrame();
+                    new AboutFrame();
                 }
             }
 
