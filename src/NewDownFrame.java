@@ -247,7 +247,7 @@ public class NewDownFrame extends JFrame {
                 URL url = new URL(address);
                 HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
                 int responseCode = httpConn.getResponseCode();
-                httpConn.setConnectTimeout(5000);
+                httpConn.setConnectTimeout(3000);
                 // always check HTTP response code first
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     newDownFrame.setDownloadSize(httpConn.getContentLength() / 1000000.0);
